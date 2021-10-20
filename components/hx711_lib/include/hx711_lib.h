@@ -38,5 +38,6 @@ class hx711_lib {
 		bool tareTimeoutDisable = 0;
         uint8_t tareTimes;
         void conversion24bit(); 					//if conversion is ready: returns 24 bit data and starts the next conversion
+        uint8_t shiftInSlow(uint8_t dataPin, uint8_t clockPin);
         long smoothedData();						//returns the smoothed data value calculated from the dataset
 };

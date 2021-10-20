@@ -24,7 +24,7 @@
 //if you have some other time consuming (>60μs) interrupt routines that trigger while the sck pin is high, this could unintentionally set the HX711 
 //into "power down" mode 
 //if required you can change the value to '1' to disable interrupts when writing to the sck pin.
-#define SCK_DISABLE_INTERRUPTS		0		//default value: 0
+#define SCK_DISABLE_INTERRUPTS		1		//default value: 0
 
 #define DATA_SET 	SAMPLES + IGN_HIGH_SAMPLE + IGN_LOW_SAMPLE // total samples in memory
 

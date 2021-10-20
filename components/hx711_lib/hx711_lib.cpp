@@ -12,6 +12,8 @@
 // Error check the validity of parameters
 #define CHECK_ARG(VAL) do { if (!(VAL)) return ESP_ERR_INVALID_ARG; } while (0)
 
+#define SHIFTIN_WITH_SPEED_SUPPORT(data,clock) shiftInSlow(data,clock)
+
 // Define thread safe resource indicator
 static portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -67,6 +69,20 @@ void hx711_lib::powerUp() {
 void hx711_lib::setCalFactor(float cal) {
 	calFactor = cal;
 	calFactorRecip = 1/calFactor;
+}
+
+uint8_t hx711_lib::shiftInSlow(uint8_t dataPin, uint8_t clockPin) {
+    uint8_t value = 0;
+    uint8_t i;
+
+    for(i = 0; i < 8; ++i) {
+		gpio_set_level(PD_SCK_GPIO, 1);
+        vTaskDelay(pdMS_TO_TICKS(1)); 
+        value |= gpio_get_level(DOUT_GPIO) << (7 - i);
+        gpio_set_level(PD_SCK_GPIO, 0);
+        vTaskDelay(pdMS_TO_TICKS(1)); 
+    }
+    return value;
 }
 
 /*  
@@ -155,13 +171,13 @@ void hx711_lib::conversion24bit() {
 
 	for (uint8_t i = 0; i < (24 + GAIN); i++) { //read 24 bit data + set gain and start next conversion
 		if (SCK_DELAY) {
-            vTaskDelay(pdMS_TO_TICKS(3)); // could be required for faster mcu's, set value in config.h
+            vTaskDelay(pdMS_TO_TICKS(1)); // could be required for faster mcu's
         }
         
         gpio_set_level(PD_SCK_GPIO, 1); // Power up the SCK PIN
 				
 		if (SCK_DELAY) {
-            vTaskDelay(pdMS_TO_TICKS(3)); // could be required for faster mcu's, set value in config.h
+            vTaskDelay(pdMS_TO_TICKS(1)); // could be required for faster mcu's
         }
 		
         gpio_set_level(PD_SCK_GPIO, 0); // Power down the SCK PIN
